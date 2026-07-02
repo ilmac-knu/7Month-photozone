@@ -3,165 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2026년 7월 일맥 정기모임 AI 포토존</title>
+<title>2026년 7월 일맥 AI 포토존</title>
 
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background: #000;
-  height: 100%;
-  font-family: Arial, sans-serif;
-}
-
-#camera, #overlay {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-}
-
-#camera {
-  object-fit: cover;
-  z-index: 1;
-}
-
-#overlay {
-  object-fit: contain;
-  z-index: 2;
-  pointer-events: none;
-}
+html, body { margin:0; padding:0; overflow:hidden; background:#000; height:100%; font-family:Arial,sans-serif; }
+#camera, #overlay { position:fixed; left:0; top:0; width:100vw; height:100vh; }
+#camera { object-fit:cover; z-index:1; }
+#overlay { object-fit:contain; z-index:2; pointer-events:none; }
 
 #menu {
-  position: fixed;
-  z-index: 10;
-  inset: 0;
-  background: rgba(0,0,0,0.9);
-  color: white;
-  text-align: center;
-  overflow-y: auto;
-  padding: 28px 0 40px 0;
+  position:fixed; z-index:10; inset:0; background:rgba(0,0,0,.9);
+  color:white; text-align:center; overflow-y:auto; padding:28px 0 40px;
 }
-
-#menu h1 {
-  font-size: 25px;
-  color: #ffd966;
-}
-
-.subtitle {
-  font-size: 16px;
-  margin-bottom: 20px;
-}
+#menu h1 { font-size:25px; color:#ffd966; margin:8px 0; }
+.subtitle { font-size:16px; margin-bottom:20px; color:#eee; }
 
 .mode-card {
-  width: 86%;
-  max-width: 420px;
-  margin: 14px auto;
-  padding: 12px;
-  border-radius: 18px;
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.22);
+  width:86%; max-width:420px; margin:14px auto; padding:12px;
+  border-radius:18px; background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);
 }
-
-.mode-card img {
-  width: 100%;
-  border-radius: 12px;
-  margin-bottom: 10px;
-  background: #222;
-}
-
+.mode-card img { width:100%; border-radius:12px; margin-bottom:10px; background:#222; }
 .mode-card button, #captureBtn, #closeResultBtn {
-  width: 100%;
-  padding: 15px 10px;
-  font-size: 19px;
-  font-weight: bold;
-  border-radius: 14px;
-  border: none;
-  color: white;
+  width:100%; padding:15px 10px; font-size:19px; font-weight:bold;
+  border-radius:14px; border:none; color:white;
 }
-
-.self-btn { background: #7a1f1f; }
-.single-btn { background: #1f4e79; }
-.couple-btn { background: #38761d; }
+.self-btn { background:#7a1f1f; }
+.people-btn { background:#6a329f; }
+.single-btn { background:#1f4e79; }
+.couple-btn { background:#38761d; }
 
 #changeBtn {
-  position: fixed;
-  right: 12px;
-  top: 12px;
-  z-index: 30;
-  padding: 9px 12px;
-  border-radius: 10px;
-  border: none;
-  background: rgba(0,0,0,0.65);
-  color: white;
-  font-size: 14px;
+  position:fixed; right:12px; top:12px; z-index:30; padding:9px 12px;
+  border-radius:10px; border:none; background:rgba(0,0,0,.65);
+  color:white; font-size:14px;
 }
-
 #captureGuide {
-  position: fixed;
-  left: 12px;
-  top: 12px;
-  z-index: 30;
-  padding: 9px 12px;
-  border-radius: 10px;
-  background: rgba(0,0,0,0.65);
-  color: white;
-  font-size: 13px;
-  line-height: 1.4;
-  display: none;
+  position:fixed; left:12px; top:12px; z-index:30; padding:9px 12px;
+  border-radius:10px; background:rgba(0,0,0,.65); color:white;
+  font-size:13px; line-height:1.4; display:none;
 }
-
 #guide {
-  position: fixed;
-  bottom: 92px;
-  left: 4%;
-  width: 92%;
-  z-index: 20;
-  color: white;
-  font-size: 14px;
-  text-align: center;
-  text-shadow: 2px 2px 5px black;
-  line-height: 1.5;
-  pointer-events: none;
+  position:fixed; bottom:92px; left:4%; width:92%; z-index:20;
+  color:white; font-size:14px; text-align:center;
+  text-shadow:2px 2px 5px black; line-height:1.5; pointer-events:none;
 }
-
 #captureBtn {
-  position: fixed;
-  left: 5%;
-  bottom: 18px;
-  width: 90%;
-  z-index: 40;
-  background: #c00000;
-  display: none;
+  position:fixed; left:5%; bottom:18px; width:90%; z-index:40;
+  background:#c00000; display:none;
 }
-
 #resultScreen {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  background: rgba(0,0,0,0.96);
-  display: none;
-  color: white;
-  text-align: center;
-  overflow-y: auto;
-  padding: 20px 0 40px 0;
+  position:fixed; inset:0; z-index:100; background:rgba(0,0,0,.96);
+  display:none; color:white; text-align:center; overflow-y:auto; padding:20px 0 40px;
 }
-
-#resultImage {
-  width: 94%;
-  max-width: 520px;
-  border-radius: 12px;
-  margin-top: 12px;
-}
-
-#closeResultBtn {
-  width: 86%;
-  max-width: 420px;
-  margin-top: 18px;
-  background: #1f4e79;
-}
+#resultImage { width:94%; max-width:520px; border-radius:12px; margin-top:12px; }
+#closeResultBtn { width:86%; max-width:420px; margin-top:18px; background:#1f4e79; }
 </style>
 </head>
 
@@ -170,9 +66,7 @@ html, body {
 <video id="camera" autoplay playsinline muted></video>
 <img id="overlay" src="">
 
-<div id="captureGuide">
-  촬영 버튼으로<br>인증샷을 저장하세요
-</div>
+<div id="captureGuide">촬영 버튼으로<br>인증샷을 저장하세요</div>
 
 <div id="menu">
   <h1>2026년 7월 일맥 AI 포토존</h1>
@@ -181,24 +75,32 @@ html, body {
   <div class="mode-card">
     <img src="royal_self.png">
     <button class="self-btn"
-      onclick="startPhotozone('royal_self.png', 'user', '셀프촬영 1인 상반신 모드입니다. 얼굴과 상반신을 가운데 공간에 맞춰 주세요.')">
-      📱 셀프촬영<br>1인 상반신
+      onclick="startPhotozone('royal_self.png','user','셀프촬영 1인 상반신 전면 카메라 모드입니다. 얼굴과 상반신을 가운데 공간에 맞춰 주세요.')">
+      📱 셀프촬영<br>1인 상반신 · 전면 카메라
+    </button>
+  </div>
+
+  <div class="mode-card">
+    <img src="royal_people.png">
+    <button class="people-btn"
+      onclick="startPhotozone('royal_people.png','environment','타인촬영 1인 상반신 후면 카메라 모드입니다. 다른 분이 찍어줄 때 사용하세요.')">
+      🙋 타인촬영<br>1인 상반신 · 후면 카메라
     </button>
   </div>
 
   <div class="mode-card">
     <img src="royal_single.png">
     <button class="single-btn"
-      onclick="startPhotozone('royal_single.png', 'environment', '타인촬영 1인 전신 모드입니다. 가운데 빈 공간에 전신이 들어오도록 서 주세요.')">
-      👤 타인촬영<br>1인 전신
+      onclick="startPhotozone('royal_single.png','environment','타인촬영 1인 전신 후면 카메라 모드입니다. 가운데 빈 공간에 전신이 들어오도록 서 주세요.')">
+      👤 타인촬영<br>1인 전신 · 후면 카메라
     </button>
   </div>
 
   <div class="mode-card">
     <img src="royal_couple.png">
     <button class="couple-btn"
-      onclick="startPhotozone('royal_couple.png', 'environment', '타인촬영 부부 전신 모드입니다. 두 분이 가운데 빈 공간에 함께 서 주세요.')">
-      👩‍❤️‍👨 타인촬영<br>부부 전신
+      onclick="startPhotozone('royal_couple.png','environment','타인촬영 2인 전신 후면 카메라 모드입니다. 두 분이 가운데 빈 공간에 함께 서 주세요.')">
+      👩‍❤️‍👨 타인촬영<br>2인 전신 · 후면 카메라
     </button>
   </div>
 </div>
@@ -209,7 +111,7 @@ html, body {
 
 <div id="resultScreen">
   <h2>인증샷이 완성되었습니다</h2>
-  <p>이미지를 길게 눌러 저장하세요.</p>
+  <p>이미지를 길게 눌러 저장하거나 공유하세요.</p>
   <img id="resultImage">
   <br>
   <button id="closeResultBtn" onclick="closeResult()">다시 촬영하기</button>
@@ -233,9 +135,7 @@ let currentStream = null;
 let currentImageFile = "";
 
 async function startCamera(cameraMode) {
-  if (currentStream) {
-    currentStream.getTracks().forEach(track => track.stop());
-  }
+  if (currentStream) currentStream.getTracks().forEach(track => track.stop());
 
   const stream = await navigator.mediaDevices.getUserMedia({
     video: {
@@ -253,37 +153,29 @@ async function startCamera(cameraMode) {
 async function startPhotozone(imageFile, cameraMode, guideText) {
   try {
     await startCamera(cameraMode);
-
     currentImageFile = imageFile;
     overlay.src = imageFile;
 
-    guide.innerText =
-      guideText +
-      "\n화면을 맞춘 뒤 아래 📸 촬영하기 버튼을 누르세요.";
+    guide.innerText = guideText + "\n화면을 맞춘 뒤 아래 📸 촬영하기 버튼을 누르세요.";
 
     menu.style.display = "none";
     changeBtn.style.display = "block";
     captureGuide.style.display = "block";
     captureBtn.style.display = "block";
-
   } catch (err) {
     alert("카메라 사용을 허용해 주세요. Chrome 또는 Safari에서 다시 열어 주세요.");
   }
 }
 
-function showMenu() {
-  menu.style.display = "block";
-}
+function showMenu() { menu.style.display = "block"; }
 
 function takePhoto() {
   const w = window.innerWidth;
   const h = window.innerHeight;
-
   canvas.width = w;
   canvas.height = h;
 
   const ctx = canvas.getContext("2d");
-
   drawCover(ctx, video, 0, 0, w, h);
 
   const img = new Image();
@@ -292,9 +184,7 @@ function takePhoto() {
 
   img.onload = function() {
     drawContain(ctx, img, 0, 0, w, h);
-
-    const dataUrl = canvas.toDataURL("image/png");
-    resultImage.src = dataUrl;
+    resultImage.src = canvas.toDataURL("image/png");
     resultScreen.style.display = "block";
   };
 }
@@ -305,9 +195,7 @@ function drawCover(ctx, img, x, y, w, h) {
   const r = Math.max(w / iw, h / ih);
   const nw = iw * r;
   const nh = ih * r;
-  const nx = x + (w - nw) / 2;
-  const ny = y + (h - nh) / 2;
-  ctx.drawImage(img, nx, ny, nw, nh);
+  ctx.drawImage(img, x + (w - nw) / 2, y + (h - nh) / 2, nw, nh);
 }
 
 function drawContain(ctx, img, x, y, w, h) {
@@ -316,9 +204,7 @@ function drawContain(ctx, img, x, y, w, h) {
   const r = Math.min(w / iw, h / ih);
   const nw = iw * r;
   const nh = ih * r;
-  const nx = x + (w - nw) / 2;
-  const ny = y + (h - nh) / 2;
-  ctx.drawImage(img, nx, ny, nw, nh);
+  ctx.drawImage(img, x + (w - nw) / 2, y + (h - nh) / 2, nw, nh);
 }
 
 function closeResult() {
