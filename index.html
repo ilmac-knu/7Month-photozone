@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2026년 7월 일맥 정기모임 AI 포토존</title>
+<title>2026년 7월 일맥 AI 포토존</title>
 
 <style>
 html, body {
@@ -29,7 +29,7 @@ html, body {
   top: 0;
   width: 100vw;
   height: 100vh;
-  object-fit: cover;
+  object-fit: contain;
   z-index: 2;
   pointer-events: none;
 }
@@ -38,7 +38,7 @@ html, body {
   position: fixed;
   z-index: 10;
   inset: 0;
-  background: rgba(0,0,0,0.88);
+  background: rgba(0,0,0,0.9);
   color: white;
   text-align: center;
   overflow-y: auto;
@@ -47,12 +47,11 @@ html, body {
 
 #menu h1 {
   font-size: 25px;
-  margin: 8px 0 8px 0;
+  margin: 8px 0;
   color: #ffd966;
-  text-shadow: 2px 2px 4px #000;
 }
 
-#menu .subtitle {
+.subtitle {
   font-size: 16px;
   margin-bottom: 20px;
   color: #eee;
@@ -73,6 +72,7 @@ html, body {
   border-radius: 12px;
   display: block;
   margin-bottom: 10px;
+  background: #222;
 }
 
 .mode-card button {
@@ -85,28 +85,13 @@ html, body {
   color: white;
 }
 
-.self-btn {
-  background: #7a1f1f;
-}
-
-.single-btn {
-  background: #1f4e79;
-}
-
-.couple-btn {
-  background: #38761d;
-}
-
-.small-text {
-  font-size: 13px;
-  color: #ddd;
-  margin-top: 18px;
-  line-height: 1.5;
-}
+.self-btn { background: #7a1f1f; }
+.single-btn { background: #1f4e79; }
+.couple-btn { background: #38761d; }
 
 #guide {
   position: fixed;
-  bottom: 14px;
+  bottom: 16px;
   left: 4%;
   width: 92%;
   z-index: 20;
@@ -114,8 +99,8 @@ html, body {
   font-size: 14px;
   text-align: center;
   text-shadow: 2px 2px 5px black;
-  pointer-events: none;
   line-height: 1.5;
+  pointer-events: none;
 }
 
 #changeBtn {
@@ -149,7 +134,7 @@ html, body {
 
 <body>
 
-<video id="camera" autoplay playsinline></video>
+<video id="camera" autoplay playsinline muted></video>
 <img id="overlay" src="">
 
 <div id="captureGuide">
@@ -185,7 +170,7 @@ html, body {
     </button>
   </div>
 
-  <div class="small-text">
+  <div style="font-size:13px; color:#ddd; margin-top:18px; line-height:1.5;">
     카메라 사용을 허용해 주세요.<br>
     촬영은 휴대폰 기본 화면 캡처 기능을 사용합니다.<br>
     카카오톡에서 안 열리면 Chrome 또는 Safari로 열어 주세요.
@@ -211,7 +196,9 @@ async function startCamera() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
-        facingMode: { ideal: "environment" }
+        facingMode: { ideal: "environment" },
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
       },
       audio: false
     });
@@ -222,8 +209,7 @@ async function startCamera() {
   } catch (err) {
     alert(
       "카메라 사용을 허용해 주세요.\n\n" +
-      "카카오톡에서 안 되면 오른쪽 위 메뉴를 눌러\n" +
-      "Chrome 또는 Safari로 열어 주세요."
+      "카카오톡에서 안 되면 Chrome 또는 Safari로 열어 주세요."
     );
   }
 }
