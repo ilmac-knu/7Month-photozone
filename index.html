@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2026년 7월 일맥 정기모임 AI 포토존</title>
+<title>2026년 7월 일맥 AI 포토존</title>
 
 <style>
 html, body { margin:0; padding:0; overflow:hidden; background:#000; height:100%; font-family:Arial,sans-serif; }
@@ -162,12 +162,21 @@ async function startPhotozone(imageFile, cameraMode, guideText) {
     changeBtn.style.display = "block";
     captureGuide.style.display = "block";
     captureBtn.style.display = "block";
+
   } catch (err) {
     alert("카메라 사용을 허용해 주세요. Chrome 또는 Safari에서 다시 열어 주세요.");
   }
 }
 
-function showMenu() { menu.style.display = "block"; }
+function showMenu() {
+  menu.style.display = "block";
+
+  // 메뉴로 돌아오면 촬영 관련 요소 숨김
+  captureBtn.style.display = "none";
+  captureGuide.style.display = "none";
+  guide.innerText = "";
+  overlay.src = "";
+}
 
 function takePhoto() {
   const w = window.innerWidth;
