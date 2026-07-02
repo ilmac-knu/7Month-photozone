@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026년 7월 일맥 정기모임 AI 포토존</title>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #000;
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+#camera {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: 1;
+}
+
+#overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: 2;
+  pointer-events: none;
+}
+
+#menu {
+  position: fixed;
+  z-index: 10;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  color: white;
+  text-align: center;
+  overflow-y: auto;
+  padding: 28px 0 40px 0;
+}
+
+#menu h1 {
+  font-size: 25px;
+  margin: 8px 0 8px 0;
+  color: #ffd966;
+  text-shadow: 2px 2px 4px #000;
+}
+
+#menu .subtitle {
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: #eee;
+}
+
+.mode-card {
+  width: 86%;
+  max-width: 420px;
+  margin: 14px auto;
+  padding: 12px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.22);
+}
+
+.mode-card img {
+  width: 100%;
+  border-radius: 12px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.mode-card button {
+  width: 100%;
+  padding: 15px 10px;
+  font-size: 19px;
+  font-weight: bold;
+  border-radius: 14px;
+  border: none;
+  color: white;
+}
+
+.self-btn {
+  background: #7a1f1f;
+}
+
+.single-btn {
+  background: #1f4e79;
+}
+
+.couple-btn {
+  background: #38761d;
+}
+
+.small-text {
+  font-size: 13px;
+  color: #ddd;
+  margin-top: 18px;
+  line-height: 1.5;
+}
+
+#guide {
+  position: fixed;
+  bottom: 14px;
+  left: 4%;
+  width: 92%;
+  z-index: 20;
+  color: white;
+  font-size: 14px;
+  text-align: center;
+  text-shadow: 2px 2px 5px black;
+  pointer-events: none;
+  line-height: 1.5;
+}
+
+#changeBtn {
+  position: fixed;
+  right: 12px;
+  top: 12px;
+  z-index: 30;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(0,0,0,0.65);
+  color: white;
+  font-size: 14px;
+}
+
+#captureGuide {
+  position: fixed;
+  left: 12px;
+  top: 12px;
+  z-index: 30;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.65);
+  color: white;
+  font-size: 13px;
+  line-height: 1.4;
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<video id="camera" autoplay playsinline></video>
+<img id="overlay" src="">
+
+<div id="captureGuide">
+  휴대폰 화면 캡처로<br>
+  인증샷을 저장하세요
+</div>
+
+<div id="menu">
+  <h1>2026년 7월 일맥 AI 포토존</h1>
+  <div class="subtitle">창덕궁 인정전 추억 인증샷</div>
+
+  <div class="mode-card">
+    <img src="royal_self.png" alt="셀프촬영 1인 상반신">
+    <button class="self-btn"
+      onclick="startPhotozone('royal_self.png', '셀프촬영 1인 상반신 모드입니다. 얼굴과 상반신을 가운데 공간에 맞춰 주세요.')">
+      📱 셀프촬영<br>1인 상반신
+    </button>
+  </div>
+
+  <div class="mode-card">
+    <img src="royal_single.png" alt="타인촬영 1인 전신">
+    <button class="single-btn"
+      onclick="startPhotozone('royal_single.png', '타인촬영 1인 전신 모드입니다. 가운데 빈 공간에 전신이 들어오도록 서 주세요.')">
+      👤 타인촬영<br>1인 전신
+    </button>
+  </div>
+
+  <div class="mode-card">
+    <img src="royal_couple.png" alt="타인촬영 부부 전신">
+    <button class="couple-btn"
+      onclick="startPhotozone('royal_couple.png', '타인촬영 부부 전신 모드입니다. 두 분이 가운데 빈 공간에 함께 서 주세요.')">
+      👩‍❤️‍👨 타인촬영<br>부부 전신
+    </button>
+  </div>
+
+  <div class="small-text">
+    카메라 사용을 허용해 주세요.<br>
+    촬영은 휴대폰 기본 화면 캡처 기능을 사용합니다.<br>
+    카카오톡에서 안 열리면 Chrome 또는 Safari로 열어 주세요.
+  </div>
+</div>
+
+<button id="changeBtn" onclick="showMenu()" style="display:none;">모드 변경</button>
+<div id="guide"></div>
+
+<script>
+const video = document.getElementById("camera");
+const overlay = document.getElementById("overlay");
+const menu = document.getElementById("menu");
+const guide = document.getElementById("guide");
+const changeBtn = document.getElementById("changeBtn");
+const captureGuide = document.getElementById("captureGuide");
+
+let cameraStarted = false;
+
+async function startCamera() {
+  if (cameraStarted) return;
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { ideal: "environment" }
+      },
+      audio: false
+    });
+
+    video.srcObject = stream;
+    cameraStarted = true;
+
+  } catch (err) {
+    alert(
+      "카메라 사용을 허용해 주세요.\n\n" +
+      "카카오톡에서 안 되면 오른쪽 위 메뉴를 눌러\n" +
+      "Chrome 또는 Safari로 열어 주세요."
+    );
+  }
+}
+
+async function startPhotozone(imageFile, guideText) {
+  await startCamera();
+
+  overlay.src = imageFile;
+
+  guide.innerText =
+    guideText +
+    "\n인정전을 배경으로 화면을 맞춘 후 휴대폰 화면을 캡처하세요.";
+
+  menu.style.display = "none";
+  changeBtn.style.display = "block";
+  captureGuide.style.display = "block";
+}
+
+function showMenu() {
+  menu.style.display = "block";
+}
+</script>
+
+</body>
+</html>
