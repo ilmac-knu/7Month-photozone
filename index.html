@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2026년 7월 일맥 AI 포토존</title>
+<title>2026년 7월 일맥 정기모임 AI 포토존</title>
 
 <style>
 html, body {
@@ -149,7 +149,7 @@ html, body {
   <div class="mode-card">
     <img src="royal_self.png" alt="셀프촬영 1인 상반신">
     <button class="self-btn"
-      onclick="startPhotozone('royal_self.png', '셀프촬영 1인 상반신 모드입니다. 얼굴과 상반신을 가운데 공간에 맞춰 주세요.')">
+      onclick="startPhotozone('royal_self.png', 'user', '셀프촬영 1인 상반신 모드입니다. 얼굴과 상반신을 가운데 공간에 맞춰 주세요.')">
       📱 셀프촬영<br>1인 상반신
     </button>
   </div>
@@ -157,7 +157,7 @@ html, body {
   <div class="mode-card">
     <img src="royal_single.png" alt="타인촬영 1인 전신">
     <button class="single-btn"
-      onclick="startPhotozone('royal_single.png', '타인촬영 1인 전신 모드입니다. 가운데 빈 공간에 전신이 들어오도록 서 주세요.')">
+      onclick="startPhotozone('royal_single.png', 'environment', '타인촬영 1인 전신 모드입니다. 가운데 빈 공간에 전신이 들어오도록 서 주세요.')">
       👤 타인촬영<br>1인 전신
     </button>
   </div>
@@ -165,7 +165,7 @@ html, body {
   <div class="mode-card">
     <img src="royal_couple.png" alt="타인촬영 부부 전신">
     <button class="couple-btn"
-      onclick="startPhotozone('royal_couple.png', '타인촬영 부부 전신 모드입니다. 두 분이 가운데 빈 공간에 함께 서 주세요.')">
+      onclick="startPhotozone('royal_couple.png', 'environment', '타인촬영 부부 전신 모드입니다. 두 분이 가운데 빈 공간에 함께 서 주세요.')">
       👩‍❤️‍👨 타인촬영<br>부부 전신
     </button>
   </div>
@@ -188,15 +188,17 @@ const guide = document.getElementById("guide");
 const changeBtn = document.getElementById("changeBtn");
 const captureGuide = document.getElementById("captureGuide");
 
-let cameraStarted = false;
+let currentStream = null;
 
-async function startCamera() {
-  if (cameraStarted) return;
+async function startCamera(cameraMode) {
+  if (currentStream) {
+    currentStream.getTracks().forEach(track => track.stop());
+  }
 
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
-        facingMode: { ideal: "environment" },
+        facingMode: { ideal: cameraMode },
         width: { ideal: 1280 },
         height: { ideal: 720 }
       },
@@ -204,7 +206,7 @@ async function startCamera() {
     });
 
     video.srcObject = stream;
-    cameraStarted = true;
+    currentStream = stream;
 
   } catch (err) {
     alert(
@@ -214,8 +216,8 @@ async function startCamera() {
   }
 }
 
-async function startPhotozone(imageFile, guideText) {
-  await startCamera();
+async function startPhotozone(imageFile, cameraMode, guideText) {
+  await startCamera(cameraMode);
 
   overlay.src = imageFile;
 
