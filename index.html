@@ -35,20 +35,6 @@ html, body {
   line-height:1.6;
 }
 
-#cameraReady {
-  position:fixed;
-  inset:0;
-  z-index:9998;
-  background:#000;
-  color:white;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  font-size:20px;
-  line-height:1.6;
-}
-
 #camera, #overlay {
   position:fixed;
   left:0;
@@ -239,13 +225,6 @@ html, body {
   </div>
 </div>
 
-<div id="cameraReady">
-  <div>
-    📷 카메라를 준비하고 있습니다.<br>
-    카메라 허용을 눌러 주세요.
-  </div>
-</div>
-
 <video id="camera" autoplay playsinline muted></video>
 <img id="overlay" src="">
 
@@ -318,7 +297,6 @@ const canvas = document.getElementById("canvas");
 const resultScreen = document.getElementById("resultScreen");
 const resultImage = document.getElementById("resultImage");
 const loading = document.getElementById("loading");
-const cameraReady = document.getElementById("cameraReady");
 
 let currentStream = null;
 let currentImageFile = "";
@@ -336,7 +314,7 @@ function loadImage(src) {
     const img = new Image();
     img.onload = resolve;
     img.onerror = resolve;
-    img.src = src + "?v=" + Date.now();
+    img.src = src;
   });
 }
 
@@ -374,20 +352,15 @@ function waitOverlayLoaded(imageFile) {
   return new Promise((resolve) => {
     overlay.onload = resolve;
     overlay.onerror = resolve;
-    overlay.src = imageFile + "?v=" + Date.now();
+    overlay.src = imageFile;
   });
 }
 
 async function startPhotozone(imageFile, cameraMode, guideText) {
   try {
-    /*
-      중요 수정 부분:
-      버튼을 누르는 순간 기존 loading과 menu를 즉시 숨깁니다.
-      그래서 카메라 허용 팝업 뒤에 'AI 포토존 준비 중' 화면이 남지 않습니다.
-    */
     loading.style.display = "none";
     menu.style.display = "none";
-    cameraReady.style.display = "flex";
+    resultScreen.style.display = "none";
 
     changeBtn.style.display = "none";
     captureGuide.style.display = "none";
@@ -408,22 +381,21 @@ async function startPhotozone(imageFile, cameraMode, guideText) {
       guideText +
       "\n사람과 왕·왕비 크기가 맞지 않으면 작게/크게 버튼으로 조정하세요.";
 
-    cameraReady.style.display = "none";
     changeBtn.style.display = "block";
     captureGuide.style.display = "block";
     captureBtn.style.display = "block";
     scaleControls.style.display = "flex";
 
   } catch (err) {
-    cameraReady.style.display = "none";
+    loading.style.display = "none";
     menu.style.display = "block";
-    alert("카메라 사용을 허용해 주세요. Chrome 또는 Safari에서 다시 열어 주세요.");
+    alert("카메라 사용을 허용해 주세요. 이미 거부하셨다면 브라우저 또는 카카오톡의 사이트 설정에서 카메라 권한을 허용으로 바꿔 주세요.");
   }
 }
 
 function showMenu() {
   menu.style.display = "block";
-  cameraReady.style.display = "none";
+  loading.style.display = "none";
   captureBtn.style.display = "none";
   captureGuide.style.display = "none";
   scaleControls.style.display = "none";
@@ -465,7 +437,7 @@ function takePhoto() {
 
   const img = new Image();
   img.crossOrigin = "anonymous";
-  img.src = currentImageFile + "?v=" + Date.now();
+  img.src = currentImageFile;
 
   img.onload = function() {
     drawContainScaled(ctx, img, 0, 0, w, h, overlayScale);
