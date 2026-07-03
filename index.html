@@ -13,10 +13,12 @@
 
 <style>
 html, body {
-  margin:0; padding:0; overflow:hidden;
-  background:#f7f0df;
+  margin:0;
+  padding:0;
+  overflow:hidden;
   height:100%;
-  font-family:Arial,sans-serif;
+  background:#000;
+  font-family:Arial, sans-serif;
 }
 
 #loading {
@@ -33,24 +35,40 @@ html, body {
   line-height:1.6;
 }
 
+#cameraReady {
+  position:fixed;
+  inset:0;
+  z-index:9998;
+  background:#000;
+  color:white;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-size:20px;
+  line-height:1.6;
+}
+
 #camera, #overlay {
   position:fixed;
-  left:0; top:0;
-  width:100vw; height:100vh;
+  left:0;
+  top:0;
+  width:100vw;
+  height:100vh;
 }
 
 #camera {
   object-fit:cover;
   z-index:1;
-  background:#111;
+  background:#000;
 }
 
 #overlay {
   object-fit:contain;
   z-index:2;
   pointer-events:none;
-  transform:scale(1);
   visibility:hidden;
+  transform:scale(1);
 }
 
 #menu {
@@ -94,7 +112,9 @@ html, body {
   background:#222;
 }
 
-.mode-card button, #captureBtn, #closeResultBtn {
+.mode-card button,
+#captureBtn,
+#closeResultBtn {
   width:100%;
   padding:15px 10px;
   font-size:19px;
@@ -120,6 +140,7 @@ html, body {
   background:rgba(0,0,0,.65);
   color:white;
   font-size:14px;
+  display:none;
 }
 
 #captureGuide {
@@ -218,6 +239,13 @@ html, body {
   </div>
 </div>
 
+<div id="cameraReady">
+  <div>
+    📷 카메라를 준비하고 있습니다.<br>
+    카메라 허용을 눌러 주세요.
+  </div>
+</div>
+
 <video id="camera" autoplay playsinline muted></video>
 <img id="overlay" src="">
 
@@ -256,7 +284,7 @@ html, body {
   </div>
 </div>
 
-<button id="changeBtn" onclick="showMenu()" style="display:none;">모드 변경</button>
+<button id="changeBtn" onclick="showMenu()">모드 변경</button>
 <div id="guide"></div>
 
 <div id="scaleControls">
@@ -290,6 +318,7 @@ const canvas = document.getElementById("canvas");
 const resultScreen = document.getElementById("resultScreen");
 const resultImage = document.getElementById("resultImage");
 const loading = document.getElementById("loading");
+const cameraReady = document.getElementById("cameraReady");
 
 let currentStream = null;
 let currentImageFile = "";
@@ -317,7 +346,9 @@ Promise.all(preloadImages.map(loadImage)).then(() => {
 });
 
 async function startCamera(cameraMode) {
-  if (currentStream) currentStream.getTracks().forEach(track => track.stop());
+  if (currentStream) {
+    currentStream.getTracks().forEach(track => track.stop());
+  }
 
   const stream = await navigator.mediaDevices.getUserMedia({
     video: {
@@ -330,20 +361,40 @@ async function startCamera(cameraMode) {
 
   video.srcObject = stream;
   currentStream = stream;
+
+  return new Promise((resolve) => {
+    video.onloadedmetadata = () => {
+      video.play();
+      resolve();
+    };
+  });
 }
 
 function waitOverlayLoaded(imageFile) {
   return new Promise((resolve) => {
     overlay.onload = resolve;
     overlay.onerror = resolve;
-    overlay.src = imageFile;
+    overlay.src = imageFile + "?v=" + Date.now();
   });
 }
 
 async function startPhotozone(imageFile, cameraMode, guideText) {
   try {
-    loading.style.display = "flex";
-    loading.innerHTML = "<div>📷 카메라와 포토존을 준비하고 있습니다.<br>잠시만 기다려 주세요.</div>";
+    /*
+      중요 수정 부분:
+      버튼을 누르는 순간 기존 loading과 menu를 즉시 숨깁니다.
+      그래서 카메라 허용 팝업 뒤에 'AI 포토존 준비 중' 화면이 남지 않습니다.
+    */
+    loading.style.display = "none";
+    menu.style.display = "none";
+    cameraReady.style.display = "flex";
+
+    changeBtn.style.display = "none";
+    captureGuide.style.display = "none";
+    captureBtn.style.display = "none";
+    scaleControls.style.display = "none";
+    guide.innerText = "";
+    overlay.style.visibility = "hidden";
 
     await waitOverlayLoaded(imageFile);
     await startCamera(cameraMode);
@@ -357,24 +408,26 @@ async function startPhotozone(imageFile, cameraMode, guideText) {
       guideText +
       "\n사람과 왕·왕비 크기가 맞지 않으면 작게/크게 버튼으로 조정하세요.";
 
-    loading.style.display = "none";
-    menu.style.display = "none";
+    cameraReady.style.display = "none";
     changeBtn.style.display = "block";
     captureGuide.style.display = "block";
     captureBtn.style.display = "block";
     scaleControls.style.display = "flex";
 
   } catch (err) {
-    loading.style.display = "none";
+    cameraReady.style.display = "none";
+    menu.style.display = "block";
     alert("카메라 사용을 허용해 주세요. Chrome 또는 Safari에서 다시 열어 주세요.");
   }
 }
 
 function showMenu() {
   menu.style.display = "block";
+  cameraReady.style.display = "none";
   captureBtn.style.display = "none";
   captureGuide.style.display = "none";
   scaleControls.style.display = "none";
+  changeBtn.style.display = "none";
   guide.innerText = "";
   overlay.src = "";
   overlay.style.visibility = "hidden";
@@ -412,7 +465,7 @@ function takePhoto() {
 
   const img = new Image();
   img.crossOrigin = "anonymous";
-  img.src = currentImageFile;
+  img.src = currentImageFile + "?v=" + Date.now();
 
   img.onload = function() {
     drawContainScaled(ctx, img, 0, 0, w, h, overlayScale);
